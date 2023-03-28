@@ -1,3 +1,9 @@
+# xmlparser-relaxed
+
+This is a fork of https://github.com/RazrFalcon/xmlparser that exposes options to support some of the relaxed parsing needs I have for some projects.
+
+If you file a PR, make sure the default behavior is identical to that of the original xmlparser.
+
 ## xmlparser
 ![Build Status](https://github.com/RazrFalcon/xmlparser/workflows/Rust/badge.svg)
 [![Crates.io](https://img.shields.io/crates/v/xmlparser.svg)](https://crates.io/crates/xmlparser)
