@@ -1,6 +1,6 @@
-extern crate xmlparser;
+extern crate xmlparser_relaxed;
 
-use xmlparser::*;
+use xmlparser_relaxed::*;
 
 
 #[test]

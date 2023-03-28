@@ -149,7 +149,7 @@ impl<'a> Stream<'a> {
     /// # Examples
     ///
     /// ```rust,should_panic
-    /// use xmlparser::Stream;
+    /// use xmlparser_relaxed::Stream;
     ///
     /// let mut s = Stream::from("text");
     /// s.advance(2); // ok
@@ -168,7 +168,7 @@ impl<'a> Stream<'a> {
     /// # Examples
     ///
     /// ```
-    /// use xmlparser::Stream;
+    /// use xmlparser_relaxed::Stream;
     ///
     /// let mut s = Stream::from("Some text.");
     /// s.advance(5);
@@ -190,7 +190,7 @@ impl<'a> Stream<'a> {
     /// # Examples
     ///
     /// ```
-    /// use xmlparser::Stream;
+    /// use xmlparser_relaxed::Stream;
     ///
     /// let mut s = Stream::from("Some text.");
     /// assert!(s.consume_byte(b'S').is_ok());
@@ -590,10 +590,10 @@ impl<'a> Stream<'a> {
     /// # Examples
     ///
     /// ```
-    /// let s = xmlparser::Stream::from("text");
+    /// let s = xmlparser_relaxed::Stream::from("text");
     ///
-    /// assert_eq!(s.gen_text_pos_from(2), xmlparser::TextPos::new(1, 3));
-    /// assert_eq!(s.gen_text_pos_from(9999), xmlparser::TextPos::new(1, 5));
+    /// assert_eq!(s.gen_text_pos_from(2), xmlparser_relaxed::TextPos::new(1, 3));
+    /// assert_eq!(s.gen_text_pos_from(9999), xmlparser_relaxed::TextPos::new(1, 5));
     /// ```
     #[inline(never)]
     pub fn gen_text_pos_from(&self, pos: usize) -> TextPos {

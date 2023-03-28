@@ -5,7 +5,7 @@
 ## Example
 
 ```rust
-for token in xmlparser::Tokenizer::from("<tagname name='value'/>") {
+for token in xmlparser_relaxed::Tokenizer::from("<tagname name='value'/>") {
     println!("{:?}", token);
 }
 ```

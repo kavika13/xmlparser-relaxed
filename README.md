@@ -17,7 +17,7 @@ If you file a PR, make sure the default behavior is identical to that of the ori
 ### Example
 
 ```rust
-for token in xmlparser::Tokenizer::from("<tagname name='value'/>") {
+for token in xmlparser_relaxed::Tokenizer::from("<tagname name='value'/>") {
     println!("{:?}", token);
 }
 ```
