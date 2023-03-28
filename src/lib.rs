@@ -336,7 +336,7 @@ pub struct Tokenizer<'a> {
     stream: Stream<'a>,
     state: State,
     depth: usize,
-    fragment_parsing: bool,
+    pub fragment_parsing: bool,
 }
 
 impl core::fmt::Debug for Tokenizer<'_> {
