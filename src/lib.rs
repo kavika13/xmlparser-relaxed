@@ -337,6 +337,7 @@ pub struct Tokenizer<'a> {
     state: State,
     depth: usize,
     pub fragment_parsing: bool,
+    pub relax_version_parsing: bool,
 }
 
 impl core::fmt::Debug for Tokenizer<'_> {
@@ -360,6 +361,7 @@ impl<'a> From<&'a str> for Tokenizer<'a> {
             state: State::Declaration,
             depth: 0,
             fragment_parsing: false,
+            relax_version_parsing: false,
         }
     }
 }
@@ -387,6 +389,7 @@ impl<'a> Tokenizer<'a> {
             state: State::Elements,
             depth: 0,
             fragment_parsing: true,
+            relax_version_parsing: false,
         }
     }
 
@@ -403,7 +406,7 @@ impl<'a> Tokenizer<'a> {
             State::Declaration => {
                 self.state = State::AfterDeclaration;
                 if s.starts_with(b"<?xml ") {
-                    Some(Self::parse_declaration(s))
+                    Some(Self::parse_declaration(self.relax_version_parsing, s))
                 } else {
                     None
                 }
@@ -592,12 +595,12 @@ impl<'a> Tokenizer<'a> {
         }
     }
 
-    fn parse_declaration(s: &mut Stream<'a>) -> Result<Token<'a>> {
-        map_err_at!(Self::parse_declaration_impl(s), s, InvalidDeclaration)
+    fn parse_declaration(relax_version_parsing: bool, s: &mut Stream<'a>) -> Result<Token<'a>> {
+        map_err_at!(Self::parse_declaration_impl(relax_version_parsing, s), s, InvalidDeclaration)
     }
 
     // XMLDecl ::= '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
-    fn parse_declaration_impl(s: &mut Stream<'a>) -> StreamResult<Token<'a>> {
+    fn parse_declaration_impl(relax_version_parsing: bool, s: &mut Stream<'a>) -> StreamResult<Token<'a>> {
         fn consume_spaces(s: &mut Stream) -> StreamResult<()> {
             if s.starts_with_space() {
                 s.skip_spaces();
@@ -611,7 +614,7 @@ impl<'a> Tokenizer<'a> {
         let start = s.pos();
         s.advance(6);
 
-        let version = Self::parse_version_info(s)?;
+        let version = Self::parse_version_info(relax_version_parsing, s)?;
         consume_spaces(s)?;
 
         let encoding = Self::parse_encoding_decl(s)?;
@@ -630,14 +633,19 @@ impl<'a> Tokenizer<'a> {
 
     // VersionInfo ::= S 'version' Eq ("'" VersionNum "'" | '"' VersionNum '"')
     // VersionNum  ::= '1.' [0-9]+
-    fn parse_version_info(s: &mut Stream<'a>) -> StreamResult<StrSpan<'a>> {
+    fn parse_version_info(relax_version_parsing: bool, s: &mut Stream<'a>) -> StreamResult<StrSpan<'a>> {
         s.skip_spaces();
         s.skip_string(b"version")?;
         s.consume_eq()?;
         let quote = s.consume_quote()?;
 
         let start = s.pos();
-        s.skip_string(b"1.")?;
+        if relax_version_parsing {
+            s.skip_bytes(|_, c| c.is_xml_digit());
+            s.skip_string(b".")?;
+        } else {
+            s.skip_string(b"1.")?;
+        }
         s.skip_bytes(|_, c| c.is_xml_digit());
         let ver = s.slice_back(start);
 
